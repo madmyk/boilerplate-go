@@ -16,7 +16,7 @@
 // Compile with -tags=jsoniter for faster json performance.
 // https://github.com/gin-gonic/gin#build-with-jsoniter
 //
-// By Craig Johnston txn2.com
+// txn2.com
 package main
 
 import (
