@@ -1,2 +1,5 @@
-# boilerplate-microservice-go
-Golang HTTP JSON microservice boilerplate.
+# Go Microservices Boilerplate
+
+Edit this documentation to describe the service.
+
+WIP
