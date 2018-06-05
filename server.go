@@ -28,7 +28,8 @@ import (
 	"github.com/gin-contrib/zap"
 	"github.com/gin-gonic/gin"
 	"go.uber.org/zap"
-	yaml "gopkg.in/yaml.v2"
+	"gopkg.in/yaml.v2"
+	"github.com/txn2/service/ginack"
 )
 
 func main() {
@@ -39,6 +40,7 @@ func main() {
 	debug := getEnv("DEBUG", "false")
 	cfgFile := getEnv("CONFIG", "")
 	basePath := getEnv("BASE_PATH", "")
+
 
 	// load a configuration yml is one is specified
 	//
@@ -85,23 +87,31 @@ func main() {
 
 			// call external libs for business logic here
 
+			ack := ginack.Ack(c)
+			ack.SetPayload(gin.H{"message":"service boilerplate"})
+
 			// return
-			c.JSON(200, gin.H{"status": "success"})
+			c.JSON(ack.ServerCode, ack)
 			return
 		},
 	)
 
 	rg.POST("/",
 		func(c *gin.Context) {
+			ack := ginack.Ack(c)
+
 			rs, err := c.GetRawData()
 			if err != nil {
-				c.JSON(500, gin.H{"status": "fail", "error": err.Error()})
+				ack.ServerCode = 500
+				ack.SetPayload(gin.H{"status": "fail", "error": err.Error()})
+				c.JSON(ack.ServerCode, ack)
 				return
 			}
 			// parse json validation etc..
 			// call external libs for business logic here
 
-			c.JSON(200, gin.H{"status": "success", "body": string(rs)})
+			ack.SetPayload(gin.H{"status": "success", "body": string(rs)})
+			c.JSON(ack.ServerCode, ack)
 			return
 		},
 	)
