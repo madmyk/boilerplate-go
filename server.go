@@ -134,7 +134,13 @@ func main() {
 
 	// default no route
 	r.NoRoute(func(c *gin.Context) {
-		c.JSON(404, gin.H{"status": "fail", "code": 404, "message": "not found"})
+		ack := ginack.Ack(c)
+		ack.SetPayload(gin.H{"message":"not found"})
+		ack.ServerCode = 404
+		ack.Success = false
+
+		// return
+		c.JSON(ack.ServerCode, ack)
 	})
 
 	r.Run(":" + port)
