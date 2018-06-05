@@ -119,12 +119,16 @@ func main() {
 	// for external status check
 	rg.GET("/status",
 		func(c *gin.Context) {
-			// return
-			c.JSON(200, gin.H{
-				"status": "success",
-				// add additional metrics here
-			})
-			return
+			ack := ginack.Ack(c)
+			p := gin.H{"message": "alive"}
+
+			if c.Query("noack") == "true" {
+				c.JSON(200, p)
+				return
+			}
+
+			ack.SetPayload(p)
+			c.JSON(ack.ServerCode, ack)
 		},
 	)
 
